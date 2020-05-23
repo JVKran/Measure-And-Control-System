@@ -48,14 +48,33 @@ class ShowFilterImpactFrequency:
 		plot.axhline(y=0, color='k')
 		plot.show()
 
+class CompareTimeFrequency:
+	movFilter = MovingAverage()
+	firFilter = FiniteImpulseResponse()
+	medFilter = Median()
+	fftFilter = FastFourierTransform()
+
+	def showDifference(self, signal):
+		self.fftFilter.apply(signal.getSignal())
+		self.fftFilter.apply(self.movFilter.apply(signal.getSignal(), False))
+		self.fftFilter.apply(self.firFilter.apply(signal.getSignal(), False))
+		self.fftFilter.apply(self.medFilter.apply(signal.getSignal(), False))
+
 if __name__ == "__main__":
 	sine = SineWave(50)
 	square = SquareWave()
 
+	# Compare Time Domain before and after filter application
 	timeEffect = ShowFilterImpactTime()
 	timeEffect.showResult(sine)
 	timeEffect.showResult(square)
 
+	# Compare Frequency Domain before and after filter application
 	frequencyEffect = ShowFilterImpactFrequency()
 	frequencyEffect.calculateResult(sine)
 	frequencyEffect.calculateResult(square)
+
+	# Compare Time and Frequency Domain of passed signal for different filters.
+	comparison = CompareTimeFrequency()
+	comparison.showDifference(sine)
+	comparison.showDifference(square)

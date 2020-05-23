@@ -5,11 +5,14 @@ from scipy.fft import fft
 class Filter:
 
 	def draw(self):
+		# Use Matplotlib to plot the filter coefficients.
 		plot.plot(self.coefficients)
 		plot.title('Filter Coefficients')
 		plot.show()
 
 	def showResult(self, filteredSignal, plotTitle, orignalSignal):
+		# Use Matplotlib to plot the difference between the original and the filtered signal
+		# for a side by side comparison.
 		plot.figure(figsize=(12, 4))
 		plot.subplot(1, 2, 1)
 		plot.plot(orignalSignal)
@@ -96,24 +99,26 @@ class Median(Filter):
 class FastFourierTransform:
 
 	def apply(self, signalToFilter, showFilterResult = True):
-		newSignal = fft(signalToFilter)
+		# Use Fast Fourier Transform module from Scipy to apply the Fast Fourier Transform.
+		frequencyDomain = fft(signalToFilter)
 		if showFilterResult:
-			self.showResult(newSignal, signalToFilter)
-		return newSignal
+			self.showResult(frequencyDomain, signalToFilter)
+		return frequencyDomain
 
-	def showResult(self, filteredSignal, orignalSignal):
+	def showResult(self, frequencyDomain, orignalSignal):
+		# Use Matplotlib to plot the difference between the signal in Time vs Frequency Domain.
 		plot.figure(figsize=(12, 4))
 		plot.subplot(1, 2, 1)
 		plot.plot(orignalSignal)
 		plot.title('Time Domain')
-		plot.xlabel('Frequency')
+		plot.xlabel('Time')
 		plot.ylabel('Amplitude')
 		plot.grid(True, which='both')
 		plot.axhline(y=0, color='k')
 		plot.subplot(1, 2, 2)
-		plot.plot(filteredSignal)
+		plot.plot(frequencyDomain)
 		plot.title('Frequency Domain')
-		plot.xlabel('Time')
+		plot.xlabel('Frequency')
 		plot.ylabel('Amplitude')
 		plot.grid(True, which='both')
 		plot.axhline(y=0, color='k')
@@ -144,4 +149,3 @@ if __name__ == "__main__":
 
 	fftFilter.apply(sine.getSignal())
 	fftFilter.apply(square.getSignal())
-
