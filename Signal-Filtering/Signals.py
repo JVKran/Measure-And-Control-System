@@ -1,3 +1,4 @@
+# Importing modules
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plot

@@ -1,4 +1,7 @@
+# Importing own code
 from Signals import SineWave, SquareWave, Signal
+
+# Importing modules
 import matplotlib.pyplot as plot
 from scipy.fft import fft
 import numpy as np
@@ -36,7 +39,7 @@ class MovingAverage(Filter):
 
 	name = 'Moving Average'
 
-	def __init__(self, coefficients = [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]):
+	def __init__(self, coefficients = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]):
 		self.coefficients = coefficients
 
 	def apply(self, signalToFilter, showFilterResult = False):
@@ -62,7 +65,7 @@ class FiniteImpulseResponse(Filter):
 
 	name = 'Finite Impulse Response'
 
-	def __init__(self, coefficients = [-0.5, 0.5]):
+	def __init__(self, coefficients = [-0.1, -0.1, -0.1, -0.1, -0.1, 0.1, 0.1, 0.1, 0.1, 0.1]):
 		self.coefficients = coefficients
 
 	def apply(self, signalToFilter, showFilterResult = False):
@@ -122,13 +125,13 @@ class Median(Filter):
 class FastFourierTransform:
 
 	def apply(self, signalToFilter, showFilterResult = False):
-		# Use Fast Fourier Transform module from Scipy to apply the Fast Fourier Transform.
-		fourierTransform = np.fft.fft(dc(signalToFilter.amplitude)) / len(signalToFilter.amplitude)
-		fourierTransform = fourierTransform[range(int(len(signalToFilter.amplitude)/2))]
+		# Use Fast Fourier Transform module from Numpy to apply the Fast Fourier Transform.
+		fourierTransform = np.fft.fft(dc(signalToFilter.amplitude)) / len(signalToFilter.amplitude)	# Normalize amplitude
+		fourierTransform = fourierTransform[range(int(len(signalToFilter.amplitude)/2))]			# Exclude sampling frequency
 		
-		tpCount = len(signalToFilter.amplitude)
-		values = np.arange(int(tpCount / 2))
-		timePeriod = tpCount / signalToFilter.samplingFrequency
+		sampleCount = len(signalToFilter.amplitude)
+		values = np.arange(int(sampleCount / 2))
+		timePeriod = sampleCount / signalToFilter.samplingFrequency
 		frequencies = values / timePeriod
 
 		if showFilterResult:
@@ -143,14 +146,13 @@ class FastFourierTransform:
 		plot.ylabel('Amplitude')
 		plot.grid(True, which='both')
 		plot.axhline(y=0, color='k')
-		plot.show()
 
 	def draw(self):
 		return
 
 if __name__ == "__main__":
-	sine = SineWave(50)
-	square = SquareWave()
+	sine = SineWave(5)
+	square = SquareWave(5)
 	movFilter = MovingAverage()
 	firFilter = FiniteImpulseResponse()
 	medFilter = Median(3)

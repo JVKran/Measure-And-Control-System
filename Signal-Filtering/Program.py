@@ -1,5 +1,8 @@
+# Importing own code
 from Signals import SineWave, SquareWave
 from Filters import MovingAverage, FiniteImpulseResponse, Median, FastFourierTransform
+
+# Importing module
 import matplotlib.pyplot as plot
 
 class Measurements:
@@ -35,24 +38,28 @@ class Measurements:
 
 
 if __name__ == "__main__":
+	# Sinewaves
 	sineOneHz = SineWave(signalFrequency = 1)
 	sineFiveHz = SineWave(signalFrequency = 5)
 	sineSevenHz = SineWave(signalFrequency = 7)
 	combinedSine = SineWave()
 	combinedSine = sineOneHz + sineFiveHz + sineSevenHz
 	
+	# Squarewaves
 	squareOneHz = SquareWave(signalFrequency = 1)
 	squareFiveHz = SquareWave(signalFrequency = 5)
 	squareSevenHz = SquareWave(signalFrequency = 7)
 	combinedSquare = SquareWave()
 	combinedSquare = squareOneHz + squareFiveHz + squareSevenHz
 
+	# Filters and Program-Logic
 	measurements = Measurements()
 	movFilter = MovingAverage()
 	firFilter = FiniteImpulseResponse()
 	medFilter = Median()
 	fftFilter = FastFourierTransform()
 
+	# Display all signals and results of applying filters
 	measurements.show(sineOneHz, movFilter)
 	measurements.show(sineOneHz, firFilter)
 	measurements.show(sineOneHz, medFilter)
