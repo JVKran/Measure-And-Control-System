@@ -1,6 +1,8 @@
-from Signals import SineWave, SquareWave
+from Signals import SineWave, SquareWave, Signal
 import matplotlib.pyplot as plot
 from scipy.fft import fft
+import numpy as np
+from copy import deepcopy as dc
 
 class Filter:
 
@@ -32,65 +34,86 @@ class Filter:
 
 class MovingAverage(Filter):
 
-	def __init__(self, coefficients = [0.25, 0.25, 0.25, 0.25]):
+	name = 'Moving Average'
+
+	def __init__(self, coefficients = [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]):
 		self.coefficients = coefficients
 
-	def apply(self, signalToFilter, showFilterResult = True):
+	def apply(self, signalToFilter, showFilterResult = False):
 		taps = len(self.coefficients)
-		newSignal = [0 for i in range(len(signalToFilter))]
-		for i in range(len(signalToFilter)):
+		newAmplitude = [0 for i in range(len(signalToFilter.amplitude))]
+		for i in range(len(signalToFilter.amplitude)):
 			if i >= taps:
 				for j in range(taps):
-					newSignal[i] = newSignal[i] + (signalToFilter[i - j] * self.coefficients[taps - j - 1])
+					newAmplitude[i] = newAmplitude[i] + (signalToFilter.amplitude[i - j] * self.coefficients[taps - j - 1])
 			else:
 				for j in range(taps - (taps - i)):
-					newSignal[i] = newSignal[i] + (signalToFilter[i - j] * self.coefficients[taps - j - 1])
+					newAmplitude[i] = newAmplitude[i] + (signalToFilter.amplitude[i - j] * self.coefficients[taps - j - 1])
 		if showFilterResult:
-			self.showResult(newSignal, 'Result of Moving Average', signalToFilter)
+			self.showResult(newAmplitude, 'Result of Moving Average', signalToFilter.amplitude)
+		newSignal = Signal()
+		newSignal.name = signalToFilter.name
+		newSignal.time = dc(signalToFilter.time)
+		newSignal.amplitude = dc(newAmplitude)
+		newSignal.samplingFrequency = dc(signalToFilter.samplingFrequency)
 		return newSignal
 
 class FiniteImpulseResponse(Filter):
 
+	name = 'Finite Impulse Response'
+
 	def __init__(self, coefficients = [-0.5, 0.5]):
 		self.coefficients = coefficients
 
-	def apply(self, signalToFilter, showFilterResult = True):
+	def apply(self, signalToFilter, showFilterResult = False):
 		taps = len(self.coefficients)
-		newSignal = [0 for i in range(len(signalToFilter))]
-		for i in range(len(signalToFilter)):
+		newAmplitude = [0 for i in range(len(signalToFilter.amplitude))]
+		for i in range(len(signalToFilter.amplitude)):
 			if i >= taps:
 				for j in range(taps):
-					newSignal[i] = newSignal[i] + (signalToFilter[i - j] * self.coefficients[taps - j - 1])
+					newAmplitude[i] = newAmplitude[i] + (signalToFilter.amplitude[i - j] * self.coefficients[taps - j - 1])
 			else:
 				for j in range(taps - (taps - i)):
-					newSignal[i] = newSignal[i] + (signalToFilter[i - j] * self.coefficients[taps - j - 1])
+					newAmplitude[i] = newAmplitude[i] + (signalToFilter.amplitude[i - j] * self.coefficients[taps - j - 1])
 		if showFilterResult:
-			self.showResult(newSignal, 'Result of Finite Impulse Response', signalToFilter)
+			self.showResult(newAmplitude, 'Result of Finite Impulse Response', signalToFilter.amplitude)
+		newSignal = Signal()
+		newSignal.name = signalToFilter.name
+		newSignal.time = dc(signalToFilter.time)
+		newSignal.amplitude = dc(newAmplitude)
+		newSignal.samplingFrequency = dc(signalToFilter.samplingFrequency)
 		return newSignal
 
 class Median(Filter):
 
+	name = 'Median'
+
 	def __init__(self, taps = 3):
 		self.taps = taps
 
-	def apply(self, signalToFilter, showFilterResult = True):
-		newSignal = [0 for i in range(len(signalToFilter))]
-		for i in range(len(signalToFilter)):
+	def apply(self, signalToFilter, showFilterResult = False):
+		newAmplitude = [0 for i in range(len(signalToFilter.amplitude))]
+		for i in range(len(signalToFilter.amplitude)):
 			subList = []
 			if i >= self.taps:
 				for j in range(self.taps):
-					subList.append(signalToFilter[i - j])
+					subList.append(signalToFilter.amplitude[i - j])
 			else:
 				for j in range(self.taps - (self.taps - i)):
-					subList.append(signalToFilter[i - j])
+					subList.append(signalToFilter.amplitude[i - j])
 			subList.sort()
 			if(len(subList) < self.taps):
 				if(len(subList) != 0):
-					newSignal[i] = newSignal[i] + subList[0]
+					newAmplitude[i] = newAmplitude[i] + subList[0]
 			else:
-				newSignal[i] = newSignal[i] + (subList[int(self.taps/2)])
+				newAmplitude[i] = newAmplitude[i] + (subList[int(self.taps/2)])
 		if showFilterResult:
-			self.showResult(newSignal, 'Result of Median Filter', signalToFilter)
+			self.showResult(newAmplitude, 'Result of Median Filter', signalToFilter.amplitude)
+		newSignal = Signal()
+		newSignal.name = signalToFilter.name
+		newSignal.time = dc(signalToFilter.time)
+		newSignal.amplitude = dc(newAmplitude)
+		newSignal.samplingFrequency = dc(signalToFilter.samplingFrequency)
 		return newSignal
 
 	def draw(self):
@@ -98,25 +121,23 @@ class Median(Filter):
 
 class FastFourierTransform:
 
-	def apply(self, signalToFilter, showFilterResult = True):
+	def apply(self, signalToFilter, showFilterResult = False):
 		# Use Fast Fourier Transform module from Scipy to apply the Fast Fourier Transform.
-		frequencyDomain = fft(signalToFilter)
-		if showFilterResult:
-			self.showResult(frequencyDomain, signalToFilter)
-		return frequencyDomain
+		fourierTransform = np.fft.fft(dc(signalToFilter.amplitude)) / len(signalToFilter.amplitude)
+		fourierTransform = fourierTransform[range(int(len(signalToFilter.amplitude)/2))]
+		
+		tpCount = len(signalToFilter.amplitude)
+		values = np.arange(int(tpCount / 2))
+		timePeriod = tpCount / signalToFilter.samplingFrequency
+		frequencies = values / timePeriod
 
-	def showResult(self, frequencyDomain, orignalSignal):
+		if showFilterResult:
+			self.showResult(frequencies, abs(fourierTransform))
+		return dc(frequencies), dc(abs(fourierTransform))
+
+	def showResult(self, frequencies, fourierTransform):
 		# Use Matplotlib to plot the difference between the signal in Time vs Frequency Domain.
-		plot.figure(figsize=(12, 4))
-		plot.subplot(1, 2, 1)
-		plot.plot(orignalSignal)
-		plot.title('Time Domain')
-		plot.xlabel('Time')
-		plot.ylabel('Amplitude')
-		plot.grid(True, which='both')
-		plot.axhline(y=0, color='k')
-		plot.subplot(1, 2, 2)
-		plot.plot(frequencyDomain)
+		plot.plot(frequencies, fourierTransform)
 		plot.title('Frequency Domain')
 		plot.xlabel('Frequency')
 		plot.ylabel('Amplitude')

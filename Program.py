@@ -2,79 +2,69 @@ from Signals import SineWave, SquareWave
 from Filters import MovingAverage, FiniteImpulseResponse, Median, FastFourierTransform
 import matplotlib.pyplot as plot
 
-class ShowFilterImpactTime:
-	movFilter = MovingAverage()
-	firFilter = FiniteImpulseResponse()
-	medFilter = Median(3)
+class Measurements:
 
-	def showResult(self, signal):
-		self.movFilter.apply(signal.getSignal())
-		self.firFilter.apply(signal.getSignal())
-		self.medFilter.apply(signal.getSignal())
-
-
-class ShowFilterImpactFrequency:
-	movFilter = MovingAverage()
-	firFilter = FiniteImpulseResponse()
-	medFilter = Median()
 	fftFilter = FastFourierTransform()
 
-	def calculateResult(self, signal):
-		originalFrequencyResponse = self.fftFilter.apply(signal.getSignal(), False)
-		filteredFrequencyResponse = self.fftFilter.apply(self.movFilter.apply(signal.getSignal(), False), False)
-		self.showResult(originalFrequencyResponse, filteredFrequencyResponse, 'Moving Average Filtered Frequency Response')
-
-		filteredFrequencyResponse = self.fftFilter.apply(self.firFilter.apply(signal.getSignal(), False), False)
-		self.showResult(originalFrequencyResponse, filteredFrequencyResponse, 'Finite Impulse Response Filtered Frequency Response')
-
-		filteredFrequencyResponse = self.fftFilter.apply(self.medFilter.apply(signal.getSignal(), False), False)
-		self.showResult(originalFrequencyResponse, filteredFrequencyResponse, 'Median Filtered Frequency Response')
-
-	def showResult(self, original, filtered, plotTitle):
-		plot.figure(figsize=(12, 4))
+	def show(self, signal, filter):
+		plot.figure(figsize=(9, 5), num='Unfiltered ' + signal.name)
 		plot.subplot(1, 2, 1)
-		plot.plot(original)
-		plot.title('Oringal Frequency Response')
-		plot.xlabel('Frequency')
+		plot.suptitle('Unfiltered ' + signal.name, fontsize=16)
+		plot.plot(signal.amplitude)
+		plot.title('Time Domain') 
+		plot.xlabel('Time')
 		plot.ylabel('Amplitude')
 		plot.grid(True, which='both')
 		plot.axhline(y=0, color='k')
 		plot.subplot(1, 2, 2)
-		plot.plot(filtered)
-		plot.title(plotTitle)
-		plot.xlabel('Frequency')
+		self.fftFilter.apply(signal, True)
+		plot.show()
+		plot.figure(figsize=(9, 5), num=filter.name +' Filtered ' + signal.name)
+		plot.suptitle(filter.name +' Filtered '  + signal.name, fontsize=16)
+		plot.subplot(1, 2, 1)
+		plot.plot(filter.apply(signal).amplitude)
+		plot.title('Time Domain')
+		plot.xlabel('Time')
 		plot.ylabel('Amplitude')
 		plot.grid(True, which='both')
 		plot.axhline(y=0, color='k')
+		plot.subplot(1, 2, 2)
+		filteredSignal = filter.apply(signal)
+		self.fftFilter.apply(filteredSignal, True)
 		plot.show()
 
-class CompareTimeFrequency:
+
+if __name__ == "__main__":
+	sineOneHz = SineWave(signalFrequency = 1)
+	sineFiveHz = SineWave(signalFrequency = 5)
+	sineSevenHz = SineWave(signalFrequency = 7)
+	combinedSine = SineWave()
+	combinedSine = sineOneHz + sineFiveHz + sineSevenHz
+	
+	squareOneHz = SquareWave(signalFrequency = 1)
+	squareFiveHz = SquareWave(signalFrequency = 5)
+	squareSevenHz = SquareWave(signalFrequency = 7)
+	combinedSquare = SquareWave()
+	combinedSquare = squareOneHz + squareFiveHz + squareSevenHz
+
+	measurements = Measurements()
 	movFilter = MovingAverage()
 	firFilter = FiniteImpulseResponse()
 	medFilter = Median()
 	fftFilter = FastFourierTransform()
 
-	def showDifference(self, signal):
-		self.fftFilter.apply(signal.getSignal())
-		self.fftFilter.apply(self.movFilter.apply(signal.getSignal(), False))
-		self.fftFilter.apply(self.firFilter.apply(signal.getSignal(), False))
-		self.fftFilter.apply(self.medFilter.apply(signal.getSignal(), False))
+	measurements.show(sineOneHz, movFilter)
+	measurements.show(sineOneHz, firFilter)
+	measurements.show(sineOneHz, medFilter)
 
-if __name__ == "__main__":
-	sine = SineWave(50)
-	square = SquareWave()
+	measurements.show(squareOneHz, movFilter)
+	measurements.show(squareOneHz, firFilter)
+	measurements.show(squareOneHz, medFilter)
 
-	# Compare Time Domain before and after filter application
-	timeEffect = ShowFilterImpactTime()
-	timeEffect.showResult(sine)
-	timeEffect.showResult(square)
+	measurements.show(combinedSine, movFilter)
+	measurements.show(combinedSine, firFilter)
+	measurements.show(combinedSine, medFilter)
 
-	# Compare Frequency Domain before and after filter application
-	frequencyEffect = ShowFilterImpactFrequency()
-	frequencyEffect.calculateResult(sine)
-	frequencyEffect.calculateResult(square)
-
-	# Compare Time and Frequency Domain of passed signal for different filters.
-	comparison = CompareTimeFrequency()
-	comparison.showDifference(sine)
-	comparison.showDifference(square)
+	measurements.show(combinedSquare, movFilter)
+	measurements.show(combinedSquare, firFilter)
+	measurements.show(combinedSquare, medFilter)
