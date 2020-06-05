@@ -1,10 +1,10 @@
-#include <SharpIR.h>
 #include "ElevationController.hpp"
 #include "BallController.hpp"
+#include "DistanceSensor.hpp"
 
 ElevationController motor(-25, 25);
-SharpIR distanceSensor(SharpIR::GP2Y0A02YK0F, A0);
-BallController controller(motor, distanceSensor);
+DistanceSensor sensor(A0);
+BallController controller(motor, sensor);
 
 void setup() {
 	Serial.begin(9600);
