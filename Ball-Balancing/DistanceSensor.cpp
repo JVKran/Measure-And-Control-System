@@ -22,9 +22,25 @@ DistanceSensor::DistanceSensor(const uint8_t distancePin = A0):
 {}
 
 uint8_t DistanceSensor::getDistance(){
+	// Poll sensor max once per 5ms to allow signal to stabilize for ADC.
+	if(millis() - lastMeasurement > 5){
+		delay(5);
+	} else {
+		delay(millis() - lastMeasurement);
+	}
 	uint8_t distance = sensor.getDistance();
-	//Serial.println(distance);
-	filter.addSample(distance);
-	//Serial.println(filter.getMean());
-	return filter.getMean();
+	lastMeasurement = millis();
+
+	meanFilter.addSample(distance);
+	uint8_t mean = meanFilter.getMean();
+	//medianFilter.addSample(distance);
+	//uint8_t median = medianFilter.getMedian();
+
+	// Serial.print("Median:");
+	// Serial.print(median);
+	// Serial.print(" ");
+	// Serial.print("Mean:");
+	// Serial.println(mean);
+
+	return mean;
 }

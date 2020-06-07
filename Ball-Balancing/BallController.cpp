@@ -5,19 +5,19 @@ BallController::BallController(ElevationController & motor, DistanceSensor & sen
 	sensor(sensor)
 {}
 
-void BallController::operator()(const uint8_t setPoint, const float Kp, const float Ki, const float Kd){
-	error = sensor.getDistance() - setPoint;			// 50 - 200 = 150
-    //errorSum += error;
-    if(millis() - lastUpdate > dt){
-    	lastUpdate = millis();
-	    errorDiv = (error - errorPrev);
-	    errorPrev = error;
-    }
-
-    steerAction = (Kp * error) + (Ki * errorSum) - (Kd * errorDiv);
- //    Serial.print(Kp * error);
- //    Serial.print(" ");
-	// Serial.println(Kd * errorDiv);
-	Serial.println(Kd * errorDiv);
+void BallController::operator()(const uint8_t setPoint, const float Kp, const float Kd){
+	distance = sensor.getDistance();
+	error = distance - setPoint;
+	errorDiv = (error - errorPrev);
+	errorPrev = error;
+    steerAction = (Kp * error) + (Kd * errorDiv);
     motor.setElevation(steerAction);
+    //Serial.print("Distance:");
+    //Serial.println(distance);
+ //    Serial.print(" ");
+    Serial.print("P-Action:");
+    Serial.print(Kp * error);
+    Serial.print(" ");
+    Serial.print("D-Action:");
+	Serial.println(Kd * errorDiv);
 }

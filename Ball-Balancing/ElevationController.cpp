@@ -8,10 +8,10 @@ ElevationController::ElevationController(const int8_t minElevation, const int8_t
 
 void ElevationController::begin(const uint8_t servoPin){
 	servoMotor.attach(servoPin);
-	servoMotor.write(90);
+	servoMotor.write(zeroPoint);
 }
 
-void ElevationController::setElevation(const int32_t desiredElevation){
+void ElevationController::setElevation(const int16_t desiredElevation){
 	if(desiredElevation >= minElevation && desiredElevation <= maxElevation){
 		servoMotor.write(zeroPoint + desiredElevation);
 	} else if (desiredElevation < minElevation){

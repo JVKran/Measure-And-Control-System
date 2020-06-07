@@ -13,7 +13,7 @@ class ElevationController {
 		ElevationController(const int8_t minElevation, const int8_t maxElevation, const int8_t zeroPoint = 90);
 		void begin(const uint8_t servoPin);
 
-		void setElevation(const int32_t desiredElevation);
+		void setElevation(const int16_t desiredElevation);
 
 		void test();
 };

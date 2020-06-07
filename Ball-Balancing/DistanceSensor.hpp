@@ -54,8 +54,11 @@ class MeanFilter {
 
 class DistanceSensor {
 	private:
-		MeanFilter<200> filter;
+		// MedianFilter<50> medianFilter;
+		MeanFilter<50> meanFilter;
+
 		SharpIR sensor;
+		unsigned long long int lastMeasurement = 0;
 	public:
 		DistanceSensor(const uint8_t distancePin = A0);
 		uint8_t getDistance();
