@@ -19,6 +19,7 @@ void ElevationController::setElevation(const int16_t desiredElevation){
 	} else {
 		servoMotor.write(zeroPoint + maxElevation);
 	}
+	Serial.println(desiredElevation);
 }
 
 void ElevationController::test(){

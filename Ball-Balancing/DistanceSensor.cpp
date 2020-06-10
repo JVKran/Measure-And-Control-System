@@ -17,7 +17,7 @@ void bubbleSort(uint8_t arr[], uint8_t n)  {
             swap(&arr[j], &arr[j+1]);  
 }
 
-DistanceSensor::DistanceSensor(const uint8_t distancePin = A0):
+DistanceSensor::DistanceSensor(const uint8_t distancePin):
 	sensor(SharpIR::GP2Y0A02YK0F, distancePin)
 {}
 
