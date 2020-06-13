@@ -6,7 +6,7 @@
 #include "ElevationController.hpp"
 #include "DistanceSensor.hpp"
 
-class BallController{
+class BallController {
 	private:
 		ElevationController motor;
 		DistanceSensor sensor;
