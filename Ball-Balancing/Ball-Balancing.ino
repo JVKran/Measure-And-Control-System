@@ -7,7 +7,6 @@ DistanceSensor sensor(A0);
 BallController controller(motor, sensor);
 
 void setup() {
-	Serial.begin(115200);
 	motor.begin(5);
 }
 

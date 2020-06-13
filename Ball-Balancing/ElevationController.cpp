@@ -11,15 +11,16 @@ void ElevationController::begin(const uint8_t servoPin){
 	servoMotor.write(zeroPoint);
 }
 
-void ElevationController::setElevation(const int16_t desiredElevation){
-	if(desiredElevation >= minElevation && desiredElevation <= maxElevation){
-		servoMotor.write(zeroPoint + desiredElevation);
-	} else if (desiredElevation < minElevation){
-		servoMotor.write(zeroPoint + minElevation);
-	} else {
-		servoMotor.write(zeroPoint + maxElevation);
+void ElevationController::setElevation(int16_t desiredElevation){
+	if (desiredElevation < minElevation){
+		desiredElevation = minElevation;
+	} else if (desiredElevation > maxElevation){
+		desiredElevation = maxElevation;
 	}
-	Serial.println(desiredElevation);
+	if(currentElevation != desiredElevation){
+		currentElevation = zeroPoint + desiredElevation;
+		servoMotor.write(currentElevation);
+	}
 }
 
 void ElevationController::test(){

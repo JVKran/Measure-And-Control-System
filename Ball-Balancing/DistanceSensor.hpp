@@ -2,7 +2,6 @@
 #define __DISTANCE_SENSOR
 
 #include <Arduino.h>
-#include <SharpIR.h>
 
 void swap(uint8_t *xp, uint8_t *yp);
 void bubbleSort(uint8_t arr[], uint8_t n);
@@ -54,11 +53,13 @@ class MeanFilter {
 
 class DistanceSensor {
 	private:
-		// MedianFilter<50> medianFilter;
 		MeanFilter<50> meanFilter;
 
-		SharpIR sensor;
+		uint8_t distancePin; 
 		unsigned long long int lastMeasurement = 0;
+
+		uint8_t measureDistance();
+
 	public:
 		DistanceSensor(const uint8_t distancePin = A0);
 		uint8_t getDistance();

@@ -5,42 +5,37 @@ void swap(uint8_t *xp, uint8_t *yp)  {
     *xp = *yp;  
     *yp = temp;  
 }  
-  
-// A function to implement bubble sort  
+
 void bubbleSort(uint8_t arr[], uint8_t n)  {  
     uint8_t i, j;  
     for (i = 0; i < n-1; i++)      
-      
-    // Last i elements are already in place  
     for (j = 0; j < n-i-1; j++)  
         if (arr[j] > arr[j+1])  
             swap(&arr[j], &arr[j+1]);  
 }
 
 DistanceSensor::DistanceSensor(const uint8_t distancePin):
-	sensor(SharpIR::GP2Y0A02YK0F, distancePin)
+	distancePin(distancePin)
 {}
 
+uint8_t DistanceSensor::measureDistance(){
+	uint8_t distance = 9462 / (analogRead(distancePin) - 16.92);
+
+	if(distance > 150) return 150;
+	else if(distance < 20) return 20;
+	else return distance;
+}
+
 uint8_t DistanceSensor::getDistance(){
-	// Poll sensor max once per 5ms to allow signal to stabilize for ADC.
-	if(millis() - lastMeasurement > 5){
-		delay(5);
+	// Sampling rate of sensor is 20ms.
+	if(millis() - lastMeasurement > 20){
+		delay(20);
 	} else {
 		delay(millis() - lastMeasurement);
 	}
-	uint8_t distance = sensor.getDistance();
+	uint8_t distance = measureDistance();
 	lastMeasurement = millis();
 
 	meanFilter.addSample(distance);
-	uint8_t mean = meanFilter.getMean();
-	//medianFilter.addSample(distance);
-	//uint8_t median = medianFilter.getMedian();
-
-	// Serial.print("Median:");
-	// Serial.print(median);
-	// Serial.print(" ");
-	// Serial.print("Mean:");
-	// Serial.println(mean);
-
-	return mean;
+	return meanFilter.getMean();
 }
