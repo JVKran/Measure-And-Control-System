@@ -2,7 +2,6 @@
 #define __BALL_CONTROLLER
 
 #include <Arduino.h>
-#include <SharpIR.h>
 #include "ElevationController.hpp"
 #include "DistanceSensor.hpp"
 
